@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>cn.bigg</groupId>
+	<artifactId>maven-test-base-jar</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>maven-test-base-jar</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<!-- 指定编码 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 声明一些全局变量，可以使用${bigg}获取 -->
+		<bigg>郭巨侠</bigg>
+		<!-- 指定maven内部时间戳格式，时区是UTC，生成GMT+8需要插件支持 -->
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+	</properties>
+
+	<dependencies>
+		<!-- 测试依赖版本号传递 -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.1</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- 资源插件，默认存在 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+			</plugin>
+
+			<!-- 编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<!-- 源代码编译版本 -->
+					<source>1.6</source>
+					<!-- 目标平台编译版本 -->
+					<target>1.6</target>
+					<!-- 编译时使用sun api -->
+					<compilerArguments>
+						<bootclasspath>${sun.boot.class.path}</bootclasspath>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+
+			<!-- jar包插件，可以操作jar包中的META-INF -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<!-- jar包中排除某些文件 -->
+					<excludes>
+						<exclude>**/nouse.properties</exclude>
+					</excludes>
+					<archive>
+						<manifest>
+							<!-- TODO -->
+						</manifest>
+						<manifestEntries>
+							<!-- 在META-INF/MAINFEST.MF文件追加字段，可以指定jar执行入口 -->
+							<Main-Class>cn.bigg.base.Base</Main-Class>
+							<!-- maven环境变量 -->
+							<buildDate>${maven.build.timestamp}</buildDate>
+							<version>${project.version}</version>
+							<!-- 自定义环境变量 -->
+							<bigg>${bigg}</bigg>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<!-- 源码插件，会打出XXX-sources.jar源码包 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- 测试插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<parallel>methods</parallel>
+					<threadCount>10</threadCount>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
+					<!-- 跳过测试 -->
+					<skip>true</skip>
+					<!-- 忽略测试失败 -->
+					<!-- <testFailureIgnore>true</testFailureIgnore> -->
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<!-- 使用excludes相当于反选，会将其他类型文件打包，包括java源文件 -->
+				<!-- <excludes> <exclude>**/*.xml</exclude> </excludes> -->
+				<filtering>true</filtering>
+			</resource>
+
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+				<!-- 指定是否替换占位符，默认false -->
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+</project>
