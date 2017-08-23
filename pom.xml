@@ -63,7 +63,7 @@
 				<configuration>
 					<!-- jar包中排除某些文件 -->
 					<excludes>
-						<exclude>**/nouse.properties</exclude>
+						<exclude>**/exclude.xml</exclude>
 					</excludes>
 					<archive>
 						<manifest>

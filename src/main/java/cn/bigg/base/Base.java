@@ -7,6 +7,7 @@ package cn.bigg.base;
  */
 public class Base {
 	/**
+	 * ${bigg}
 	 * 
 	 * @param args
 	 */
